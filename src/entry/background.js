@@ -9,10 +9,10 @@ chrome.runtime.onMessage.addListener(function (msg) {
         chrome.windows.create({
             url: 'intercept.html',
             type: 'popup',
-            width: 500,
-            height: 800,
-            top: 150,
-            left: 10,
+            width: 400,
+            height: 750,
+            // top: 150,
+            // left: 10,
         }, (window) => {
             console.log('background', msg)
             chrome.storage.local.set({'window_id': {'id': window.id, 'uuid': msg.uuid}})

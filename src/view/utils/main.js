@@ -69,3 +69,44 @@ export const handleBigNumber = (amountStr) => {
         return `${(amount / 1e9).toFixed(2)}${symbol}`
     }
 }
+
+export function formatMemeNumber(num, fixedNumber) {
+    if (num === '0' || num === 0 || num === undefined) {
+        return num;
+    }
+    // 将数字转换为字符串并分割为整数部分和小数部分
+    let [integerPart, decimalPart] = num.split('.');
+
+    // 计算小数部分前导零的个数
+    let leadingZeros = 0;
+    if (decimalPart) {
+        for (let char of decimalPart) {
+            if (char === '0') {
+                leadingZeros++;
+            } else {
+                break;
+            }
+        }
+    } else {
+        return num;
+    }
+
+    // 取前导零后面的前 5 位数字
+    const significantDigits = decimalPart.slice(
+        leadingZeros,
+        leadingZeros + fixedNumber,
+    );
+
+    // 如果前导零的个数小于 2 个，返回原始数字字符串
+    if (leadingZeros < 2) {
+        return parseFloat(num).toFixed(fixedNumber).toString();
+    }
+
+    // 生成格式化的字符串
+    if (leadingZeros > 0) {
+        return `${integerPart}.0{${leadingZeros}}${significantDigits}`;
+    } else {
+        // 如果没有前导零，直接返回原始数字字符串（截取前5位）
+        return `${integerPart}.${decimalPart.slice(0, fixedNumber)}`;
+    }
+}

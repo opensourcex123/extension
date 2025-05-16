@@ -1,3 +1,6 @@
+import {encodeCalls} from "viem/experimental/erc7821";
+import {encodeFunctionData} from "viem";
+import {DelegateAbi} from "@/consts/consts";
 
 async function RecognizeTransaction(chainId, argArray, provider) {
     // console.log("参数", argArray)
@@ -61,29 +64,32 @@ async function RecognizeTransaction(chainId, argArray, provider) {
 
     if (method === 'wallet_sendCalls') {
         console.log('argArray', argArray)
-        const from = argArray.params[0].from
 
-        const batchTx = argArray.params[0].calls.map(item => {
-            return {
-                from,
-                to: item.to,
-                value: item.value,
-                data: item?.data || '',
-                chain_id: chainId,
-                language: language,
-                website: window.location.host,
-                source: 'EXTENSION',
-                user_address: ""
-            }
-        })
-        console.log('body', batchTx)
+        const from = argArray.params[0].from
+        const contractAddress = argArray.params[0].from
+        const value = argArray.params[0].value || "0x0"
+        const data = encodeCalls(argArray.params[0].calls)
+        const executeData = encodeFunctionData({
+            abi: DelegateAbi,
+            functionName: "execute",
+            args: [
+                "0x0100000000000000000000000000000000000000000000000000000000000000",
+                data,
+            ],
+        });
 
         responseObj = {
-            body: {batch_transaction: batchTx},
+            body: {
+                from: from,
+                to: contractAddress,
+                value: value,
+                data: executeData,
+                chain_id: chainId,
+                language: language,
+            },
             type: "tx",
-            end_url: "recognizeBatchTx"
+            end_url: "recognizeTx"
         }
-
     }
 
     let res;

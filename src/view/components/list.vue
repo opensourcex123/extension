@@ -35,7 +35,7 @@
         </a-list-item-meta>
         <template #actions>
           <div class="text-xl font-bold" v-if="item.amount">
-            {{ parseFloat(item.amount) }}
+            {{ formatMemeNumber(item.amount, 4) }}
           </div>
         </template>
       </a-list-item>
@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import {netMap, useDefaultImage} from "@/view/utils/main";
+import {formatMemeNumber, handleBigNumber, netMap, useDefaultImage} from "@/view/utils/main";
 import emptyJson from "@/assets/lottie/empty.json";
 import {Vue3Lottie} from "vue3-lottie";
 

@@ -11,7 +11,7 @@
           <h3 class="text-lg font-medium text-black ml-1">{{ chrome.i18n.getMessage("contract_info_title") }}<span
               v-if="props.data.name">({{ props.data.name }})</span></h3>
         </div>
-        <div class="mt-2 mb-4 text-sm text-gray-800 dark:text-gray-300 relative z-10">
+        <div class="mt-2 mb-4 text-sm text-black relative z-10">
           {{ props.data.address }}
         </div>
         <div class="flex relative z-10">
