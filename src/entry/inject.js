@@ -4,12 +4,17 @@ import {isEmpty} from "lodash-es";
 import { nanoid } from 'nanoid'
 
 // let proxyInterval;
-const method = ['eth_sendTransaction', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_signTypedData', 'eth_signTypedData_v1', 'eth_signTypedData_v3']
-const supportNetwork = ['0x1', '0x38', '0x89', '0xa4b1', '0xa', '0x5']
+const method = ['eth_sendTransaction', 'eth_signTypedData_v4', 'eth_sign', 'personal_sign', 'eth_signTypedData', 'eth_signTypedData_v1', 'eth_signTypedData_v3', 'wallet_sendCalls']
+const supportNetwork = ['0x1', '0x38', '0x89', '0xa4b1', '0xa', '0x5', '0xaa36a7']
 
 function continueRequest(metamaskRequest, ethereumRequestArguments, resolve, reject) {
     return metamaskRequest({ ...ethereumRequestArguments })
         .then((data) => {
+            console.log('eth', ethereumRequestArguments)
+            if (ethereumRequestArguments.method === 'wallet_switchEthereumChain') {
+                console.log('data', data)
+            }
+            console.log('data', data)
             resolve(data);
         })
         .catch((error) => reject(error));
@@ -33,7 +38,7 @@ if (window.postMessage && !isEmpty(window.ethereum)) {
             !data.data.data.params.fromExtension
         ) {
             if (method.includes(data.data.data.method)) {
-                // console.log('拦截postmessage', data.data.data.method)
+                console.log('拦截postmessage', data.data.data.method)
                 let uuid = nanoid()
                 const chainId = sessionStorage.getItem('network')
                 // let params
@@ -162,7 +167,7 @@ async function postEvent(metamaskRequest, ethereumRequestArguments, resolve, rej
                 })
                     .then((data) => resolve(data))
                     .catch((error) => {
-                        console.log('err', error)
+                        console.log('err1', error)
                         reject(error)
                     });
             } else if (event.detail.cancel) {
@@ -199,6 +204,7 @@ const proxyEthereumProvider = (ethereumProvider) => {
             // ethereum.send(method: string, params?: Array<unknown>): Promise<JsonRpcResponse>;
             // > gets handled like ethereum.request
             if (typeof payloadOrMethod === 'string') {
+                console.log('send func trigger', argArray, thisArg)
                 return ethereumProvider.request({ method: payloadOrMethod, params: callbackOrParams });
             }
 
@@ -225,7 +231,7 @@ const proxyEthereumProvider = (ethereumProvider) => {
                 }
 
                 if (method.includes(ethereumRequestArguments.method)) {
-                    // console.log('拦截到了',ethereumRequestArguments)
+                    console.log('拦截到了',ethereumRequestArguments)
                     postEvent(metamaskRequest, ethereumRequestArguments, resolve, reject).then(() => {})
                 }  else {
                     continueRequest(metamaskRequest, ethereumRequestArguments, resolve, reject)
@@ -297,6 +303,7 @@ const proxyEthereumProvider = (ethereumProvider) => {
             // console.log('sendAsync 代理成功')
 
             if (method.includes(request.method)) {
+                console.log('sendAsync 拦截到了',argArray)
                 let uuid = nanoid();
                 const chainId = sessionStorage.getItem('network')
 
@@ -362,7 +369,7 @@ const proxyAllEthereumProviders = () => {
     }
 
     else if (!isEmpty(window.okxwallet)) {
-        // console.log('代理okx')
+        console.log('代理okx')
         proxyEthereumProvider(window.okxwallet);
     }
 

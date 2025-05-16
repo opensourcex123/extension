@@ -40,7 +40,6 @@ async function RecognizeTransaction(chainId, argArray, provider) {
     }
 
     if (method === "eth_sendTransaction") {
-
         const from = argArray.params[0].from
         const contractAddress = argArray.params[0].to
         const value = argArray.params[0].value || "0x0"
@@ -58,11 +57,34 @@ async function RecognizeTransaction(chainId, argArray, provider) {
             type: "tx",
             end_url: "recognizeTx"
         }
-
     }
 
-    responseObj.body.website = window.document.domain
-    responseObj.body.source = 'EXTENSION'
+    if (method === 'wallet_sendCalls') {
+        console.log('argArray', argArray)
+        const from = argArray.params[0].from
+
+        const batchTx = argArray.params[0].calls.map(item => {
+            return {
+                from,
+                to: item.to,
+                value: item.value,
+                data: item?.data || '',
+                chain_id: chainId,
+                language: language,
+                website: window.location.host,
+                source: 'EXTENSION',
+                user_address: ""
+            }
+        })
+        console.log('body', batchTx)
+
+        responseObj = {
+            body: {batch_transaction: batchTx},
+            type: "tx",
+            end_url: "recognizeBatchTx"
+        }
+
+    }
 
     let res;
     if (provider.request) {
