@@ -1,4 +1,4 @@
-# 🛡ByteHunter
+# 🛡ByteHunter（2025 ETH北京 公共物品赛道三等奖）
 [简体中文](readme/README.zh_CN.md)
 ***
 ByteHunter safeguards all your on-chain interactions, identifies risks and intercepts them
